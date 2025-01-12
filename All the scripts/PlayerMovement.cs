@@ -9,14 +9,14 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        // Capture input
+        // Arah gerak player
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
     }
 
     void FixedUpdate()
     {
-        // Move player
+        // Gerakin player sesuai arahnya
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
     }
 }

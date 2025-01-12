@@ -3,30 +3,31 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     [SerializeField]
-    public Transform player; // Reference to the player's Transform
-    public float speed = 2f; // Movement speed of the enemy
+    public Transform player; 
+    public float speed = 2f; // Seberapa cepet musuh bergerak
 
     void Start()
     {
+        // Cari objek yang punya tag "Player", basically playernya (cuman satu)
         player = GameObject.FindWithTag("Player")?.transform;
 
         if (player == null)
         {
-            Debug.LogError("Player object not found in the scene. Make sure the player has the 'Player' tag.");
+            Debug.LogError("Player object not found in scene. Player tag object might be missing");
         }
     }
     void Update()
     {
         if (player != null)
         {
-            // Calculate direction towards the player
+            // Kalkulasi jarak dari objek musuh ini ke player
             Vector3 direction = (player.position - transform.position).normalized;
 
-            // Rotate enemy to face the player
+            // Ubah arah musuh untuk "ngarah", "ngehadep" ke player
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0, 0, angle);
 
-            // Move the enemy in the direction of the player
+            // Musuh maju ke arah pemain
             transform.position += direction * speed * Time.deltaTime;
         }
     }

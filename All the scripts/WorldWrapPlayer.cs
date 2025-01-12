@@ -1,19 +1,20 @@
 using UnityEngine;
 
+// konsepnya si duniany infinite, padahal cuman area yang kalau player udah sampai ujung, di teleport to the opposite side
+
 public class PlayerWorldWrap : MonoBehaviour
 {
     public float boundaryX = 10f;
     public float boundaryY = 10f;
 
     public delegate void OnPlayerWrap(Vector3 offset);
-    public static event OnPlayerWrap PlayerWrapped; // Event to notify enemies
-
+    public static event OnPlayerWrap PlayerWrapped; // Event yang jadi cue teleport item di skrip worldwrapother
     void Update()
     {
         Vector3 newPosition = transform.position;
         Vector3 offset = Vector3.zero;
 
-        // Wrap horizontally
+        // posisi teleport arah horizontal
         if (transform.position.x > boundaryX)
         {
             offset.x = -2 * boundaryX;
@@ -25,7 +26,7 @@ public class PlayerWorldWrap : MonoBehaviour
             newPosition.x = boundaryX;
         }
 
-        // Wrap vertically
+        // posisi teleport arah vertikal
         if (transform.position.y > boundaryY)
         {
             offset.y = -2 * boundaryY;
@@ -39,10 +40,10 @@ public class PlayerWorldWrap : MonoBehaviour
 
         if (offset != Vector3.zero)
         {
-            // Apply the teleport
+            // dari value arah yang diperoleh, player di teleport
             transform.position = newPosition;
 
-            // Notify enemies about the wrapping
+            // invoke event biar objek lain teleport juga
             PlayerWrapped?.Invoke(offset);
         }
     }

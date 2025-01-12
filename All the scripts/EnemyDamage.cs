@@ -1,8 +1,8 @@
 using UnityEngine;
 
+// Si damage ini dipisah karena mau bikin logic damage yang lain, nggak sempet
 public class EnemyDamage : MonoBehaviour
 {
-    public int damage = 10; // Damage dealt to the player on collision
-
-    // Other enemy logic...
+    // Kalau musuh kena player, HP player berkurang sebesar ini
+    public int damage = 10;
 }

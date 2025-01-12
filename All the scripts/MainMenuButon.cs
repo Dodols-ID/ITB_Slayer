@@ -1,19 +1,19 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// tombol - tombol main menu
 public class MainMenu : MonoBehaviour
 {
     public void PlayGame()
     {
-        Debug.Log("Fuck.");
-        // Load the gameplay scene (replace "GameScene" with your gameplay scene's name)
+        // Load scene buat cinematic sebelum play screen
         SceneManager.LoadScene("scn_originstory");
     }
 
     public void QuitGame()
     {
-        // Quit the application (only works in a built executable)
-        Debug.Log("Quit Game");
+        // Keluar game
+        Debug.Log("Quitting.");
         Application.Quit();
     }
 }

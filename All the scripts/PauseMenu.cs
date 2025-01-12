@@ -1,69 +1,67 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // For loading scenes like the main menu
-using UnityEngine.UI; // For Button functionality
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
-    public GameObject pauseMenuUI; // Reference to the Pause Menu UI
-    public Button resumeButton; // Reference to the Resume Button
-    public Button mainMenuButton; // Reference to the Main Menu Button
-    public Button pauseButton; // Reference to the button that triggers the pause menu
+    public GameObject pauseMenuUI; // Referensi menu pause
+    public Button resumeButton; // referensi tombol 'resume'
+    public Button mainMenuButton; // referensi tombol 'main menu'
+    public Button pauseButton; // referensi tombol 'pause' yang ngebuka menu pause
 
-    public bool isPaused = false; // To check if the game is paused
-    private AudioSource backgroundAudio; // Reference to the background audio
+    public bool isPaused = false; // flag untuk cek kalau game di pause atau nggak
+    private AudioSource backgroundAudio; // referensi bgm
 
     void Start()
     {
-        // Get the AudioSource component (make sure your background music has an AudioSource)
+        // Cari objek yang jadi sumber audio
         backgroundAudio = GameObject.FindGameObjectWithTag("Music").GetComponent<AudioSource>(); // Adjust the tag or object if needed
         
-        // Add listeners for buttons
+        // Nambah listener ke source bgm
         resumeButton.onClick.AddListener(ResumeGame);
         mainMenuButton.onClick.AddListener(LoadMainMenu);
-        pauseButton.onClick.AddListener(PauseGame); // Add listener for the Pause button
+        pauseButton.onClick.AddListener(PauseGame);
     }
 
-    void Update()
-    {
-        // You can remove the escape key detection if you're using the Pause button to trigger it
-    }
-
+    // Saat pause menu keluar
     public void PauseGame()
     {
         isPaused = true;
-        pauseMenuUI.SetActive(true); // Show the pause menu
-        Time.timeScale = 0f; // Pause the game (freeze all time-dependent actions)
+        pauseMenuUI.SetActive(true); // Pause menu keluar
+        Time.timeScale = 0f; // Game di pause (objek yang time dependent, mostly semua objek di game berhenti)
 
-        // Pause the background music
+        // Bgm dimatiin sebentar
         if (backgroundAudio != null)
         {
             backgroundAudio.Pause();
         }
     }
 
+    // Saat tombol resume di klik
     public void ResumeGame()
     {
         isPaused = false;
-        pauseMenuUI.SetActive(false); // Hide the pause menu
-        Time.timeScale = 1f; // Resume the game (unfreeze time)
+        pauseMenuUI.SetActive(false); // Pause menu ditutup
+        Time.timeScale = 1f; // Waktu dilanjutkan, objek permainan jalan lagi
 
-        // Resume the background music
+        // Bgm dilanjutin dari poin terakhir dia berhenti
         if (backgroundAudio != null)
         {
             backgroundAudio.UnPause();
         }
     }
 
+    // Kalau tombol main menu di klik
     public void LoadMainMenu()
     {
-        Time.timeScale = 1f; // Ensure game resumes before loading a new scene
-        SceneManager.LoadScene("MainMenu"); // Replace "MainMenu" with your actual scene name
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu"); // Kembali ke main menu
     }
-
+    // Kalau mau ada tombol quit
     public void QuitGame()
     {
-        // Quit the application or go back to the main menu
-        Debug.Log("Quitting game...");
+        // Keluar aplikasinya
+        Debug.Log("Quitting");
         Application.Quit();
     }
 }

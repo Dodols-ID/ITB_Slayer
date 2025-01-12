@@ -2,22 +2,22 @@ using UnityEngine;
 
 public class ItemSpawner : MonoBehaviour
 {
-    public GameObject itemPrefab; // Reference to the item prefab
-    public float spawnChance = 0.1f; // The chance for the item to spawn (0 to 1)
-    public float spawnInterval = 5f; // Time interval between each spawn check
+    public GameObject itemPrefab; 
+    public float spawnChance = 0.1f; // Kemungkinan si itemnya ngespawn (placeholder)
+    public float spawnInterval = 5f; // Seberapa cepet sebelum itemnya dicek bisa ngespawn lagi atau nggak berdasar spawn chance
 
     void Start()
     {
-        // Start the spawn checking loop
+        // Mulai pengecekan kalau itemnya collide sama player, ato diambil sama playernya
         InvokeRepeating("TrySpawnItem", 0f, spawnInterval);
     }
 
     void TrySpawnItem()
     {
-        // Generate a random number between 0 and 1
+        // Bikin angka diantara 0 sampai 1
         float chance = Random.value;
 
-        // If the chance is less than the spawnChance, spawn the item
+        // kalau angka chance lebih kecil dari spawnchance, item di spawn
         if (chance < spawnChance)
         {
             SpawnItem();
@@ -26,13 +26,13 @@ public class ItemSpawner : MonoBehaviour
 
     void SpawnItem()
     {
-        // Get random screen coordinates within the camera's view
+        // Ambil lokasi ato koordinat random
         Vector2 spawnPosition = new Vector2(
             Random.Range(-Camera.main.orthographicSize * Camera.main.aspect, Camera.main.orthographicSize * Camera.main.aspect),
             Random.Range(-Camera.main.orthographicSize, Camera.main.orthographicSize)
         );
 
-        // Instantiate the item at the random position
+        // Taroh prefab dari item yang pake skrip ini ke lokasi random itu
         Instantiate(itemPrefab, spawnPosition, Quaternion.identity);
     }
 }

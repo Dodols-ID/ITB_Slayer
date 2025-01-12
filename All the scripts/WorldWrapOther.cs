@@ -1,22 +1,23 @@
 using UnityEngine;
 
+// teleport objek selain player pas di teleport
 public class EnemyWorldWrap : MonoBehaviour
 {
     void OnEnable()
     {
-        // Subscribe to the player's wrapping event
+        // semua objek di teleport ke sisi ujung
         PlayerWorldWrap.PlayerWrapped += OnPlayerWrapped;
     }
 
     void OnDisable()
     {
-        // Unsubscribe to avoid memory leaks
+        // Unsubscribe biar nggak memory leak
         PlayerWorldWrap.PlayerWrapped -= OnPlayerWrapped;
     }
 
     private void OnPlayerWrapped(Vector3 offset)
     {
-        // Adjust enemy position based on the player's wrapping offset
+        // ambil posisi player sebegai referensi teleport
         transform.position += offset;
     }
 }

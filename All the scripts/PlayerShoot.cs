@@ -2,32 +2,32 @@ using UnityEngine;
 
 public class PlayerShoot : MonoBehaviour
 {
-    public Weapon currentWeapon; // The active weapon
-    public Weapon basicWeapon;    // Reference to the Basic weapon
-    public Weapon heavyWeapon;    // Reference to the Heavy weapon
-    public Transform shootPoint;    // The position where bullets are spawned
+    public Weapon currentWeapon; // Weapon aktif
+    public Weapon basicWeapon;    // Refer ke Basic Weapon
+    public Weapon heavyWeapon;    // Refer ke Heavy weapon
+    public Transform shootPoint;    // TItik bullet di spawn
 
-    private float nextFireTime = 0f; // Timer to track when the player can shoot next
-    private float overheatThreshold = 0f; // Track the overheat of the weapon
-    private float overheatCooldownTime = 0f; // Time to wait before the weapon can be used again after overheating
-    public float overheatRate = 1f; // How quickly the weapon overheats while firing
-    public float maxOverheat = 100f; // The maximum threshold before overheating
-    public float cooldownRate = 5f; // Rate at which overheat cools down when not firing
-    public float overheatCooldownDuration = 2f; // How long to wait before the weapon can be used again after overheating
+    private float nextFireTime = 0f; // Timer buat delay nembak pas switiching senjata
+    private float overheatThreshold = 0f; // Value overheat Heavy Weapon
+    private float overheatCooldownTime = 0f; // Waktu overheat selesai (kalau overheat)
+    public float overheatRate = 1f; // Rate overheat heavy weapon
+    public float maxOverheat = 100f; // Threshold weapon sebelum overheat
+    public float cooldownRate = 5f; // Kalau nggak overheat dan sejata nggak ditembak, seberapa cepet meter overheatnya turun
+    public float overheatCooldownDuration = 2f; // Kalau overheat, seberapa lama senjata disabled
     public int ultCount;
-    public GameObject screenWipeEffect; // Reference to the screen wipe sprite or effect
+    public GameObject screenWipeEffect; // referense efek screen wipe ulti
     void Start()
     {
-    // Set the initial weapon to Basic (or whichever weapon you want to start with)
+    // Senjata pas game dibuat basic weapon
         currentWeapon = basicWeapon;
     }
 
 void Update()
 {
-    // Debug: Print current weapon and overheat
-    Debug.Log($"Current Weapon: {currentWeapon?.weaponName}, Overheat: {overheatThreshold}");
+    // Debug senjata + variabel overheat
+    Debug.Log($"Current Weapon: {currentWeapon?.weaponName} Overheat: {overheatThreshold}");
 
-    // Only switch to the heavy weapon when Q is pressed
+    // Heavy weapon switch (press z)
     if (Input.GetKey(KeyCode.Z))
     {
         currentWeapon = heavyWeapon;
@@ -37,10 +37,10 @@ void Update()
         currentWeapon = basicWeapon;
     }
 
-    // If the weapon is in cooldown, prevent shooting only if it's the heavy weapon
+    // Kalau overheat, heavy weapon nggak bisa dipakai, tapi basic weapon tetep bisa jalan
     if (overheatCooldownTime > 0f)
     {
-        overheatCooldownTime -= Time.deltaTime; // Decrease cooldown time
+        overheatCooldownTime -= Time.deltaTime; // Mengurangi lama heavy weapon nggak bisa dipakai saat overheat
         Debug.Log($"Weapon is in cooldown: {overheatCooldownTime}s left");
 
         if (overheatCooldownTime <= 0f)
@@ -48,7 +48,7 @@ void Update()
             overheatThreshold = 0;
         }
 
-        // If the current weapon is heavy, prevent shooting
+        // Cek kalau currentweapon heavy (kalau z masih dipencet), dan lanngsung ganti ke basic lagi (karena ada delay, nggak akan rusak lagi kayak sebelumnya)
         if (currentWeapon.weaponName == "Heavy")
         {
             currentWeapon = basicWeapon;
@@ -56,30 +56,31 @@ void Update()
         }
     }
 
-    // Check if the current weapon is the heavy weapon and if the Q key is being held
+    // Cek currentweapon Heavy dan tombol z dipencet dan dalam overheat cooldown atau nggak
     if (currentWeapon != null && currentWeapon.weaponName == "Heavy" && Input.GetKey(KeyCode.Z) && overheatThreshold < maxOverheat)
     {
-        Debug.Log("Q key is being pressed");
-        // If the heavy weapon is being held, shoot at the nearest enemy
+        Debug.Log("Z pressed, initiating Heavy Weapon");
+        // Tembak ke musuh terdekat
         if (Time.time >= nextFireTime)
         {
             ShootAtNearestEnemy();
         }
 
-        // Increase the overheat threshold while firing
+        // overheat threshhold ditambah seiring heavy weapon ditembakin
         overheatThreshold += overheatRate * Time.deltaTime;
 
-        // If overheat threshold reaches maximum, prevent shooting
+        // kalau overheat, heavy weapon disabled
         if (overheatThreshold >= maxOverheat)
         {
             overheatThreshold = maxOverheat; // Ensure it doesn’t go above max
             overheatCooldownTime = overheatCooldownDuration; // Start the cooldown period
-            Debug.Log("Weapon is overheated!");
+            Debug.Log("Heavy overheat");
         }
     }
+    // Kalau heavy weapon nggak dipake, tembak pakai Basic Weapon
     else if (currentWeapon != null && currentWeapon.weaponName == "Basic")
     {
-        // Automatically shoot with the basic weapon (no need to hold Q)
+        // Penembakan otomatis (nggak pakai tombol)
         if (Time.time >= nextFireTime)
         {
             ShootAtNearestEnemy();
@@ -89,7 +90,7 @@ void Update()
             overheatThreshold -= cooldownRate * Time.deltaTime;
         }
     }
-
+    // Kalau sempet pickup ulti dan x ditekan
     if (Input.GetKeyDown(KeyCode.X) && ultCount > 0)
     {
         ActivateScreenWipe();
@@ -101,7 +102,7 @@ void ActivateScreenWipe()
 {
     Debug.Log("Ultimate activated!");
     
-    // Trigger screen wipe animation
+    // Spawn grafik ultinya (kucing di bis itu)
     if (screenWipeEffect != null)
     {
         Vector3 startPosition = Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height / 2, 10));
@@ -109,7 +110,7 @@ void ActivateScreenWipe()
 
     }
 
-    // Destroy all enemies
+    // Hilangkan semua enemy on screen
     GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
     foreach (GameObject enemy in enemies)
@@ -117,24 +118,24 @@ void ActivateScreenWipe()
         Destroy(enemy);
     }
 
-    // Decrease ultCount
-    ultCount--;
+    // Set jumlah ulti jadi 0
+    ultCount = 0;
 
-    Debug.Log($"Ultimate used. Remaining ultCount: {ultCount}");
+    Debug.Log($"Cato used");
 }
 
-
+// Track musuh dan tembak
 void ShootAtNearestEnemy()
 {
-    if (overheatThreshold >= maxOverheat) return; // Prevent shooting if overheated
 
-    // Find all enemies in the scene with the "Enemy" tag
+    // Cari objek dengan tag "Enemy" (jan lupa buat yang enemy barunya)
     GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
+    // Kalau nggak ada yang kedeteksi, nggak ada bullet yang ditembak
     if (enemies.Length == 0)
         return;
 
-    // Find the closest enemy
+    // Cari musuh terdekat
     GameObject nearestEnemy = null;
     float minDistance = Mathf.Infinity;
 
@@ -148,7 +149,7 @@ void ShootAtNearestEnemy()
         }
     }
 
-        // If there's a valid nearest enemy, aim and shoot at it
+        // Kalau ada musuh, tembak sesuai arah musuh
         if (nearestEnemy != null)
         {
             Vector3 direction = nearestEnemy.transform.position - shootPoint.position;
@@ -156,7 +157,7 @@ void ShootAtNearestEnemy()
 
             shootPoint.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
 
-            // Use the bulletPrefab from the currentWeapon (whether it's the basic or heavy weapon)
+            
             if (currentWeapon.bulletPrefab != null)
             {
                 GameObject bullet = Instantiate(currentWeapon.bulletPrefab, shootPoint.position, shootPoint.rotation);
@@ -166,38 +167,32 @@ void ShootAtNearestEnemy()
                     rb.AddForce(direction.normalized * currentWeapon.shootForce, ForceMode2D.Impulse);
                 }
 
-                Debug.Log("Shooting at enemy: " + nearestEnemy.name);
+                Debug.Log("Shooting this enemy: " + nearestEnemy.name);
 
-                // Reset the fire timer
+                
                 nextFireTime = Time.time + currentWeapon.fireRate;
             }
             else
             {
+                // just in case pas nambah weapon baru ada bug, mungkin si prefab musuhnya kelupaaan (tapi jangan sampe lupa juga ya)
                 Debug.LogWarning("No bulletPrefab assigned to weapon: " + currentWeapon.weaponName);
             }
         }
     }
-
+    // Weapon switchin
     public void ChangeWeapon(Weapon newWeapon)
     {
         if (newWeapon == null)
         {
+            // kalau nanti si indeks senjatanya kosong
             Debug.LogWarning("Attempted to switch to a null weapon!");
             return;
         }
 
-        // Update the shooting parameters to match the new weapon
+        // ganti nama currentweapon yang udah di switch
         currentWeapon = newWeapon;
 
-        // Reset fire timer to allow immediate firing with the new weapon
+        // Delay setiap bullet yang ditembak senjata di reset jadi bisa langsung tembak
         nextFireTime = Time.time;
-
-        // Reset overheat threshold when switching weapon
-        overheatThreshold = 0f;
-
-        // Reset cooldown time when switching weapon
-        overheatCooldownTime = 0f;
-
-        Debug.Log($"Switched to weapon: {newWeapon.weaponName} with fire rate: {newWeapon.fireRate}");
     }
 }

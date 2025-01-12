@@ -2,32 +2,32 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float damage = 25f; // Amount of damage the bullet does
-    public float lifespan = 5f; // Time in seconds before the bullet gets destroyed
+    public float damage = 25f; // Damage bullet biasa (placeholder)
+    public float lifespan = 5f; // Waktu sebelum bullet menghilang (bullet nggak akan floting selamanya)
 
     private void Start()
     {
-        // Destroy the bullet after 'lifespan' seconds
+        // Setelah waktu 'lifespan' habis, bullet dihilangkan
         Destroy(gameObject, lifespan);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log("Collider triggered with: " + other.gameObject.name);
-        // Check if the bullet hit an enemy
+        // Cek ketika bullet kena musuh
         if (other.CompareTag("Enemy"))
         {
-            // Apply damage to the enemy (we'll implement this in the enemy script)
-            Debug.Log("Bullet hit an enemy!");
+            // Kurangin HP musuh
+            Debug.Log("Bullet hit.");
             EnemyDeath enemy = other.GetComponent<EnemyDeath>();
             if (enemy != null)
             {
                 enemy.TakeDamage(damage);
-                Debug.Log("Damage applied to enemy");
+                Debug.Log("Damage applied.");
             }
 
-            // Destroy the bullet (for now, let's just destroy it)
-            Debug.Log("Destroying bullet: " + gameObject.name);
+            // Hilangkan objek bullet setelah kena musuh
+            Debug.Log("Bullet destroy: " + gameObject.name);
             Destroy(gameObject);
         }
     }
